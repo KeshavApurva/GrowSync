@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GrowSync</title>
+<style>
+:root{--bg:#120e24;--panel:#1b1635;--panel2:#251e47;--line:#34295e;--tx:#efeaff;--mu:#9d93c9;--ac:#ff4d8d;--c2:#4de1ff;--ok:#5be3a0;--r:14px}
+*{box-sizing:border-box;margin:0}
+html{color-scheme:dark}
+body{font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{position:sticky;top:0;height:100vh;padding:22px 14px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;font-weight:700;font-size:19px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--ac);display:grid;place-items:center;color:#1a0b14;font-weight:800}
+nav{display:flex;flex-direction:column;gap:4px}
+nav button{display:flex;align-items:center;gap:12px;padding:10px 12px;border:0;border-radius:10px;background:none;color:var(--mu);cursor:pointer;text-align:left}
+nav button span{width:20px;text-align:center}
+nav button:hover{background:var(--panel2);color:var(--tx)}
+nav button.on{background:var(--panel2);color:var(--tx);box-shadow:inset 3px 0 0 var(--ac)}
+main{padding:34px clamp(18px,4vw,48px);max-width:1120px;width:100%}
+h1{font-size:30px;letter-spacing:-.3px}
+h2{font-size:17px;margin-bottom:12px}
+.sub{color:var(--mu);margin:2px 0 24px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.stat b{display:block;font-size:34px;line-height:1.1}
+.stat:first-child b{color:var(--ac)}
+.stat small{color:var(--mu)}
+.two{display:grid;grid-template-columns:3fr 2fr;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.add{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.add input[type=text],.add input[name=title]{flex:1 1 220px}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.add input,.add select{width:auto}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--c2);outline-offset:1px}
+.btn{background:var(--ac);color:#1a0b14;border:0;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:var(--panel2);color:var(--tx);border:1px solid var(--line)}
+.btn.danger{background:none;color:var(--ac);border:1px solid var(--ac)}
+.chips{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.chip{background:none;border:1px solid var(--line);border-radius:99px;padding:5px 14px;color:var(--mu);cursor:pointer}
+.chip.on{background:var(--c2);border-color:var(--c2);color:#06222a;font-weight:600}
+ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.task{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.card .task{background:var(--panel2)}
+.ck{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid var(--mu);background:none;color:#06241a;cursor:pointer;font-weight:800;line-height:1}
+.done .ck{background:var(--ok);border-color:var(--ok)}
+.done .tt>div:first-child{text-decoration:line-through;color:var(--mu)}
+.tt{flex:1;min-width:0}
+.meta{font-size:12.5px;color:var(--mu);display:flex;align-items:center;gap:6px}
+.meta i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.late{color:var(--ac)}
+.x{background:none;border:0;color:var(--mu);font-size:20px;cursor:pointer;padding:0 6px}
+.x:hover{color:var(--ac)}
+.empty{color:var(--mu);padding:18px;border:1px dashed var(--line);border-radius:12px}
+.notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:left;cursor:pointer;min-height:130px;display:flex;flex-direction:column;gap:6px}
+.note:hover{border-color:var(--c2)}
+.note h3{font-size:16px}
+.note p{color:var(--mu);font-size:14px;flex:1;overflow:hidden;white-space:pre-wrap}
+.note small{color:var(--mu);font-size:12px}
+.pin{color:var(--ac)}
+.board{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:10px}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px;min-height:180px}
+.col h3{font-size:14px;color:var(--mu);display:flex;justify-content:space-between}
+.col:last-child h3{color:var(--ok)}
+.card2{background:var(--panel2);border-radius:10px;padding:10px 12px}
+.card2 .row{margin-top:6px;gap:4px;justify-content:space-between}
+.card2 button{background:none;border:0;color:var(--mu);cursor:pointer;font-size:18px;padding:0 6px}
+.card2 button:hover:not(:disabled){color:var(--c2)}
+.card2 button:disabled{opacity:.25;cursor:default}
+.focus{display:flex;flex-direction:column;align-items:center;gap:20px}
+.ring{--p:0%;width:260px;height:260px;border-radius:50%;background:conic-gradient(var(--ac) var(--p),var(--panel2) 0);display:grid;place-items:center}
+.ring div{width:224px;height:224px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:52px;font-weight:700;font-variant-numeric:tabular-nums}
+.bars{display:flex;align-items:flex-end;gap:10px;height:150px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:100%;font-size:12px;color:var(--mu)}
+.bar i{width:100%;background:var(--c2);border-radius:6px 6px 0 0;min-height:3px}
+.bar:last-child i{background:var(--ac)}
+dialog{margin:auto;background:var(--panel);color:var(--tx);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(560px,92vw)}
+dialog::backdrop{background:rgba(5,2,15,.7)}
+dialog form{display:flex;flex-direction:column;gap:12px}
+dialog .row{justify-content:flex-end}
+.chk{display:flex;gap:8px;align-items:center;color:var(--mu)}
+.chk input{width:auto}
+#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);background:var(--ok);color:#06241a;padding:10px 20px;border-radius:99px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:9}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:780px){
+ .app{grid-template-columns:1fr}
+ aside{position:fixed;inset:auto 0 0 0;top:auto;height:auto;flex-direction:row;padding:6px;border-right:0;border-top:1px solid var(--line);z-index:5}
+ .brand{display:none}
+ nav{flex-direction:row;width:100%;justify-content:space-around}
+ nav button{flex-direction:column;gap:0;font-size:12px;padding:6px 10px;box-shadow:none!important}
+ main{padding-bottom:100px}
+ .two{grid-template-columns:1fr}
+ h1{font-size:25px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside>
+  <div class="brand"><div class="logo">G</div>GrowSync</div>
+  <nav id="nav"></nav>
+ </aside>
+ <main id="main"></main>
+</div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status"></div>
+<input type="file" id="file" accept=".json" hidden>
+<script>
+const $=s=>document.querySelector(s),K='growsync.v1';
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+S=S||{tasks:[],notes:[],ideas:[],focus:{}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Could not save. Browser storage is blocked.')}};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const PR={h:['High','var(--ac)',0],m:['Medium','var(--c2)',1],l:['Low','var(--mu)',2]};
+const STG=['Idea','Scripting','Recording','Editing','Published'];
+const NAV=[['home','⌂','Home'],['tasks','✓','Tasks'],['notes','✎','Notes'],['videos','▶','Videos'],['focus','◔','Focus']];
+let view='home',filter='open',q='';
+let T={len:1500,left:1500,end:0,id:null};
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2600)}
+function dueTxt(d){if(!d)return'';const t=ymd(new Date()),n=ymd(new Date(Date.now()+864e5));
+ const l=new Date(d+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+ return d<t?`<span class=late>· Overdue (${l})</span>`:d===t?'· Today':d===n?'· Tomorrow':'· '+l}
+function taskRow(x){const p=PR[x.p];return `<li class="task ${x.done?'done':''}"><button class=ck data-act=tg data-id=${x.id} aria-label="Mark ${x.done?'open':'done'}">${x.done?'✓':''}</button><div class=tt><div>${esc(x.title)}</div><div class=meta><i style="background:${p[1]}"></i>${p[0]} ${x.done?'':dueTxt(x.due)}</div></div><button class=x data-act=dt data-id=${x.id} aria-label="Delete task">×</button></li>`}
+const sortOpen=a=>a.sort((a,b)=>PR[a.p][2]-PR[b.p][2]||(a.due||'9').localeCompare(b.due||'9'));
+const fmtN=n=>n.toLocaleString('en-IN');
+
+const V={
+home(){
+ const td=ymd(new Date()),open=sortOpen(S.tasks.filter(x=>!x.done)),dn=S.tasks.filter(x=>x.done&&x.doneOn===td).length;
+ const pipe=S.ideas.filter(i=>i.stage<4).length,h=new Date().getHours();
+ const g=h<5?'Late night':h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+ let days=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-(6-i)*864e5);return[d.toLocaleDateString('en-IN',{weekday:'short'}),S.focus[ymd(d)]||0]});
+ const mx=Math.max(60,...days.map(d=>d[1]));
+ return `<h1>${g}, Keshav</h1><p class=sub>${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
+ <div class=stats>${[[open.length,'Open tasks'],[dn,'Done today'],[S.focus[td]||0,'Focus minutes today'],[pipe,'Videos in the pipeline']].map(s=>`<div class=stat><b>${fmtN(s[0])}</b><small>${s[1]}</small></div>`).join('')}</div>
+ <div class=two>
+  <section class=card><h2>Up next</h2>
+   <form class=add data-form=task><input name=title placeholder="Add a task and press Enter" required maxlength=140><input type=hidden name=p value=m><input type=hidden name=due value=""><button class=btn>Add task</button></form>
+   <ul>${open.slice(0,5).map(taskRow).join('')||'<div class=empty>Nothing open. Add a task above to get started.</div>'}</ul></section>
+  <section class=card><h2>Focus minutes this week</h2><div class=bars>${days.map(d=>`<div class=bar>${d[1]||''}<i style="height:${d[1]/mx*100}%"></i>${d[0]}</div>`).join('')}</div></section>
+ </div>
+ <section class=card style="margin-top:14px"><h2>Your data</h2><p class=sub style="margin:0 0 12px">Everything is stored on this device only. Save a backup file now and then.</p>
+  <div class=row><button class="btn ghost" data-act=ex>Save backup</button><button class="btn ghost" data-act=im>Restore backup</button></div></section>`},
+tasks(){
+ const td=ymd(new Date());let l=S.tasks.slice();
+ if(filter==='open')l=l.filter(x=>!x.done);else if(filter==='today')l=l.filter(x=>!x.done&&x.due&&x.due<=td);else if(filter==='done')l=l.filter(x=>x.done);
+ filter==='done'?l.sort((a,b)=>(b.doneOn||'').localeCompare(a.doneOn||'')):sortOpen(l);
+ return `<h1>Tasks</h1><p class=sub>${S.tasks.filter(x=>!x.done).length} open</p>
+ <form class=add data-form=task><input name=title placeholder="What needs doing?" required maxlength=140>
+ <select name=p aria-label=Priority><option value=h>High</option><option value=m selected>Medium</option><option value=l>Low</option></select>
+ <input type=date name=due aria-label="Due date"><button class=btn>Add task</button></form>
+ <div class=chips>${[['open','Open'],['today','Due today'],['done','Done'],['all','All']].map(c=>`<button class="chip ${filter===c[0]?'on':''}" data-act=ft data-id=${c[0]}>${c[1]}</button>`).join('')}</div>
+ <ul>${l.map(taskRow).join('')||'<div class=empty>No tasks here. Add one above.</div>'}</ul>`},
+notes(){return `<h1>Notes</h1><p class=sub>${S.notes.length} saved</p>
+ <div class=add><input id=nq type=search placeholder="Search notes" value="${esc(q)}" style="flex:1 1 220px;width:auto"><button class=btn data-act=nn>New note</button></div>
+ <div class=notes id=ng>${notesGrid()}</div>`},
+videos(){return `<h1>Videos</h1><p class=sub>Move each idea from first spark to published.</p>
+ <form class=add data-form=idea><input name=title placeholder="New video idea" required maxlength=120><button class=btn>Add idea</button></form>
+ <div class=board>${STG.map((s,i)=>{const c=S.ideas.filter(x=>x.stage===i);return `<div class=col><h3>${s}<span>${c.length}</span></h3>${c.map(x=>`<div class=card2><div>${esc(x.title)}</div><div class=row><span><button data-act=mv data-id="${x.id}:-1" ${i===0?'disabled':''} aria-label="Move back">‹</button><button data-act=mv data-id="${x.id}:1" ${i===4?'disabled':''} aria-label="Move forward">›</button></span><button data-act=di data-id=${x.id} aria-label="Delete idea">×</button></div></div>`).join('')||'<small style="color:var(--mu)">Empty</small>'}</div>`}).join('')}</div>`},
+focus(){return `<h1>Focus</h1><p class=sub>Pick a length, start, and keep going until the ring fills.</p>
+ <div class=focus><div class=ring id=ring><div id=tt>${mm(T.left)}</div></div>
+ <div class=chips>${[25,50,15,5].map(m=>`<button class="chip ${T.len===m*60?'on':''}" data-act=tm data-id=${m}>${m} min</button>`).join('')}</div>
+ <div class=row><button class=btn id=ts data-act=ts>${T.id?'Pause':'Start'}</button><button class="btn ghost" data-act=tr>Reset</button></div>
+ <p class=sub style="margin:0">Today: ${S.focus[ymd(new Date())]||0} focus minutes</p></div>`}
+};
+function notesGrid(){
+ const s=q.trim().toLowerCase();
+ const l=S.notes.filter(n=>!s||(n.title+' '+n.body).toLowerCase().includes(s)).sort((a,b)=>(b.pin?1:0)-(a.pin?1:0)||b.at-a.at);
+ return l.map(n=>`<button class=note data-act=on data-id=${n.id}><h3>${n.pin?'<span class=pin>● </span>':''}${esc(n.title||'Untitled')}</h3><p>${esc(n.body.slice(0,150))}</p><small>${new Date(n.at).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</small></button>`).join('')||`<div class=empty>${s?'No notes match your search.':'No notes yet. Tap New note to write your first one.'}</div>`}
+const mm=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+
+function render(){
+ $('#nav').innerHTML=NAV.map(n=>`<button class="${view===n[0]?'on':''}" data-act=go data-id=${n[0]}><span>${n[1]}</span>${n[2]}</button>`).join('');
+ $('#main').innerHTML=V[view]();paintT()}
+function paintT(){
+ const e=$('#tt');if(e)e.textContent=mm(T.left);
+ const b=$('#ts');if(b)b.textContent=T.id?'Pause':'Start';
+ const r=$('#ring');if(r)r.style.setProperty('--p',(1-T.left/T.len)*100+'%');
+ document.title=T.id?mm(T.left)+' · GrowSync':'GrowSync'}
+function beep(){try{const a=new AudioContext(),o=a.createOscillator();o.frequency.value=880;o.connect(a.destination);o.start();o.stop(a.currentTime+.4)}catch(e){}}
+function tick(){
+ T.left=Math.max(0,Math.round((T.end-Date.now())/1000));paintT();
+ if(T.left<=0){clearInterval(T.id);T.id=null;const m=Math.round(T.len/60),k=ymd(new Date());
+  S.focus[k]=(S.focus[k]||0)+m;save();T.left=T.len;beep();toast(m+' focus minutes saved');render()}}
+function openNote(id){
+ const n=S.notes.find(x=>x.id===id)||{};
+ $('#dlg').innerHTML=`<form data-form=note><input type=hidden name=id value="${n.id||''}"><input name=title placeholder="Title" value="${esc(n.title)}" maxlength=100><textarea name=body rows=10 placeholder="Write anything: scripts, ideas, links">${esc(n.body)}</textarea><label class=chk><input type=checkbox name=pin ${n.pin?'checked':''}>Pin to top</label><div class=row><button type=button class="btn ghost" data-act=nc>Cancel</button>${n.id?`<button type=button class="btn danger" data-act=nd data-id=${n.id}>Delete</button>`:''}<button class=btn>Save note</button></div></form>`;
+ $('#dlg').showModal()}
+
+const ACT={
+ go(id){view=id;render()},
+ ft(id){filter=id;render()},
+ tg(id){const t=S.tasks.find(x=>x.id===id);t.done=!t.done;t.doneOn=t.done?ymd(new Date()):null;save();render()},
+ dt(id){S.tasks=S.tasks.filter(x=>x.id!==id);save();render()},
+ nn(){openNote()},on(id){openNote(id)},nc(){$('#dlg').close()},
+ nd(id){S.notes=S.notes.filter(x=>x.id!==id);save();$('#dlg').close();render();toast('Note deleted')},
+ mv(id){const[i,d]=id.split(':'),x=S.ideas.find(z=>z.id===i);x.stage=Math.max(0,Math.min(4,x.stage+ +d));save();render();if(x.stage===4&&d==='1')toast('Published. Nice work.')},
+ di(id){S.ideas=S.ideas.filter(x=>x.id!==id);save();render()},
+ tm(id){if(T.id)return toast('Pause the timer to change its length');T.len=T.left=id*60;render()},
+ ts(){if(T.id){clearInterval(T.id);T.id=null;paintT()}else{T.end=Date.now()+T.left*1000;T.id=setInterval(tick,500);paintT()}},
+ tr(){clearInterval(T.id);T.id=null;T.left=T.len;paintT()},
+ ex(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='growsync-backup-'+ymd(new Date())+'.json';a.click();toast('Backup saved')},
+ im(){$('#file').click()}
+};
+const FORM={
+ task(f){const t=f.get('title').trim();if(!t)return;S.tasks.push({id:uid(),title:t,p:f.get('p')||'m',due:f.get('due')||'',done:false});save();render()},
+ idea(f){const t=f.get('title').trim();if(!t)return;S.ideas.push({id:uid(),title:t,stage:0});save();render()},
+ note(f){const id=f.get('id'),d={title:f.get('title').trim(),body:f.get('body'),pin:f.get('pin')==='on',at:Date.now()};
+  if(!d.title&&!d.body.trim())return $('#dlg').close();
+  if(id)Object.assign(S.notes.find(x=>x.id===id),d);else S.notes.push({id:uid(),...d});
+  save();$('#dlg').close();render();toast('Note saved')}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&ACT[b.dataset.act])ACT[b.dataset.act](b.dataset.id,b)});
+document.addEventListener('submit',e=>{e.preventDefault();const f=e.target;if(FORM[f.dataset.form])FORM[f.dataset.form](new FormData(f))});
+document.addEventListener('input',e=>{if(e.target.id==='nq'){q=e.target.value;$('#ng').innerHTML=notesGrid()}});
+$('#dlg').addEventListener('click',e=>{if(e.target.id==='dlg')e.target.close()});
+$('#file').addEventListener('change',e=>{const fl=e.target.files[0];if(!fl)return;const r=new FileReader();
+ r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.tasks)||!Array.isArray(d.notes))throw 0;
+  S={tasks:d.tasks,notes:d.notes,ideas:d.ideas||[],focus:d.focus||{}};save();render();toast('Backup restored')}catch(x){toast('That file is not a GrowSync backup')}};
+ r.readAsText(fl);e.target.value=''});
+render();
+</script>
+</body>
+</html>
